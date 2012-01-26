@@ -74,7 +74,8 @@ def cmdParser(obj):
 
 def loop():
 	global alive
-	while alive is True:
+	while True:
+		if client.alive is False: break
 		client.parse(conn.recv())
 
 def init():
