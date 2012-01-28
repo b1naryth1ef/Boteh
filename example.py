@@ -64,7 +64,7 @@ def cmdParser(obj):
 		for admin in adys:
 		 	print admin, client.makeAdmin(admin)
 		for chan in client.channels.values():
-		 	if admin in chan.users.keys() and client.isAdmin(admin):
+		 	if admin in chan.users.keys() and client.isClientAdmin(admin):
 		 		client.opUser(admin)
 	elif client.users[obj.nick].admin is True:
 		client.opUser(obj.nick, obj.chan)
@@ -81,7 +81,7 @@ def loop():
 def init():
 	global conn, client
 
-	conn = Connection(network='irc.quakenet.org', nick='BroMan').startup(True)
+	conn = Connection(network='irc.quakenet.org', nick='BroMan').startup()
 	client = Client(conn)
 	client.joinChannel('#bitchnipples')
 	client.botMode = True

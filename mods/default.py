@@ -111,7 +111,7 @@ def partChan(msg):
 	if len(msz) in [2,3]:
 		if len(msz) == 3: m = msz[2]
 		else: m = random.choice(byelist)
-		if client.inChannel(msz[1]):
+		if client.isClientInChannel(msz[1]):
 			client.partChannel(msz[1], m)
 			client.send(msg.chan, 'Parted channel %s' % msz[1])
 		else: client.send(msg.chan, 'Can\'t part channel %s, not in it.' % msz[1])
