@@ -12,6 +12,12 @@ adys = ['B1|Irssi', 'B1|Phone', 'B1naryTh1ef']
 
 alive = True
 
+def removeCommand(command):
+	if command in commands.keys():
+		del commands[command]
+	if command in aliass.keys():
+		del aliass[command]
+
 class Command():
 	def __init__(self, cmd, exe, desc, usage, alias):
 		self.cmd = cmd
@@ -22,7 +28,7 @@ class Command():
 
 		for i in self.alias:
 			aliass[i] = cmd
-
+			
 def Cmd(cmd, desc, usage, alias=[]):
 	def deco(func):
 		commands[cmd] = Command(cmd, func, desc, usage, alias)
@@ -34,7 +40,7 @@ def Cmd(cmd, desc, usage, alias=[]):
 
 def RequireAdmin(func):
 	def deco(msg):
-		if client.isAdmin(msg.nick):
+		if client.isClientAdmin(msg.nick):
 			return func(msg)
 		else:
 			return client.sendMustBeAdmin(msg.chan)
@@ -94,3 +100,6 @@ def init():
 		except Exception, e:
 			print 'MODULE ERROR: Please add the function init() to your module.[', e, ']'
 	loop()
+
+if __name__ == '__main__':
+	print 'Please start using the command "python start.py"'
