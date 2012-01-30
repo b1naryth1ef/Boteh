@@ -1,6 +1,8 @@
 from example import Cmd, client, RequireAdmin, RequireBotOp, removeCommand
 from subprocess import *
-import random, sys, os
+import random, sys, os, time
+from utilz import weather
+
 
 byelist = ["I'm gonna go party somewhere else...", 
 'Peace YO!', 
@@ -134,6 +136,18 @@ def cmdKick(obj):
 	else:
 		client.send(msg.chan, 'Usage: ', cmdKick.usage)
 
+@Cmd('!ban', 'Ban a user from the channel', '!ban <user/*banmask>', ['!b'])
+@RequireAdmin
+@RequireBotOp
+def cmdBan(obj):
+	msg = obj.msg.split(' ', 1)
+	if len(msg) == 2:
+		if msg[1].startswith('*'): banmask = msg[1][1:]
+		else: banmask = msg[1]
+		client.sendRaw('MODE %s +b %s' % (obj.chan, banmask))
+	else:
+		client.send(obj.chan, 'Usage: ', cmdKick.usage)
+
 @Cmd('!shout', 'Shout to one or more channels', '!shout <[*]channel/all> <message>', ['!!'])
 @RequireAdmin
 def cmdShout(obj):
@@ -154,5 +168,16 @@ def cmdShout(obj):
 	else:
 		client.send(obj.chan, 'Usage: ', cmdShout.usage)
 
+@Cmd('!time', 'Check the time/date', '!time', ['!date'])
+def cmdTime(obj):
+	client.send(obj.chan, 'Time: %s' % time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()))
 
+@Cmd('!weather', 'Check the weather', '!weather <zipcode>', ['!w'])
+def cmdWeather(obj):
+	msg = obj.msg.split(' ', 1)
+	if len(msg) == 2:
+		for m in weather.getMsg(msg[1]):
+			client.send(obj.chan, m)
+	else:
+		client.send(obj.chan, 'Usage: ', cmdWeather.usage)
 def init(): pass
