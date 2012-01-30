@@ -58,7 +58,7 @@ def opmeCmd(msg):
 		client.opUser(msg.nick, msg.chan)
 		client.send(msg.chan, '%s: Well hello there you sexy beast! About time you had OP...' % msg.nick)
 	else:
-		client.send(msg.chan, 'Usage: ', opmeCmd.usage)
+		client.send(msg.chan, 'Usage: '+ opmeCmd.usage)
 
 @Cmd('!op', 'Op a user', '!op <user>')
 @RequireAdmin
@@ -68,7 +68,7 @@ def opCmd(msg):
 	if len(msz) == 2:
 		client.opUser(msz[1], msg.chan)
 	else:
-		client.send(msg.chan, 'Usage: ', opCmd.usage)
+		client.send(msg.chan, 'Usage: '+ opCmd.usage)
 
 @Cmd('!deop', 'Deop a user', '!deop <user>')
 @RequireAdmin
@@ -78,7 +78,7 @@ def opCmd(msg):
 	if len(msz) == 2:
 		client.deopUser(msz[1], msg.chan)
 	else:
-		client.send(msg.chan, 'Usage: ', deopCmd.usage)
+		client.send(msg.chan, 'Usage: '+ deopCmd.usage)
 
 @Cmd('!addadmin', 'Add an admin.', '!addadmin <user>')
 @RequireAdmin
@@ -87,7 +87,7 @@ def addAdmin(msg):
 	if len(msz) == 2:
 		if client.makeAdmin(msz[1]): client.send(msg.chan, 'Added %s as an admin' % msz[1])
 		else: client.send(msg.chan, 'Unknown user %s' % msz[1])
-	else: client.send(msg.chan, 'Usage: ', addAdmin.usage)
+	else: client.send(msg.chan, 'Usage: '+ addAdmin.usage)
 
 @Cmd('!rmvadmin', 'Remove an admin.', '!rmvadmin <user>')
 @RequireAdmin
@@ -96,7 +96,7 @@ def rmvAdmin(msg):
 	if len(msz) == 2:
 		if client.removeAdmin(msz[1]): client.send(msg.chan, 'Removed %s as an admin' % msz[1])
 		else: client.send(msg.chan, 'Unknown user %s' % msz[1])
-	else: client.send(msg.chan, 'Usage: ', rmvAdmin.usage)
+	else: client.send(msg.chan, 'Usage: '+ rmvAdmin.usage)
 
 @Cmd('!join', 'Join a channel.', '!join <channel>')
 @RequireAdmin
@@ -107,7 +107,7 @@ def joinChan(msg):
 			client.joinChannel(msz[1])
 			client.send(msg.chan, 'Joined channel %s' % msz[1])
 		else: client.send(msg.chan, 'Can\'t is already in %s.' % msz[1])
-	else: client.send(msg.chan, 'Usage: ', joinChan.usage)
+	else: client.send(msg.chan, 'Usage: '+ joinChan.usage)
 
 @Cmd('!part', 'Part (leave) a channel', '!part <channel> [msg]')
 @RequireAdmin
@@ -120,7 +120,7 @@ def partChan(msg):
 			client.partChannel(msz[1], m)
 			client.send(msg.chan, 'Parted channel %s' % msz[1])
 		else: client.send(msg.chan, 'Can\'t part channel %s, not in it.' % msz[1])
-	else: client.send(msg.chan, 'Usage: ', partChan.usage)
+	else: client.send(msg.chan, 'Usage: '+ partChan.usage)
 
 @Cmd('!kick', 'Kick a user from the channel', '!kick <user> [reason] (must be sent from channel)', ['!k'])
 @RequireAdmin
@@ -134,7 +134,7 @@ def cmdKick(obj):
 		client.sendRaw('KICK %s %s :%s' % (obj.chan, msg[1], msg[2]))
 		client.send(msg.chan, 'Kicked %s from %s for %s.' % (msg[1], obj.chan, msg[2]))
 	else:
-		client.send(msg.chan, 'Usage: ', cmdKick.usage)
+		client.send(msg.chan, 'Usage: '+ cmdKick.usage)
 
 @Cmd('!ban', 'Ban a user from the channel', '!ban <user/*banmask>', ['!b'])
 @RequireAdmin
@@ -146,7 +146,7 @@ def cmdBan(obj):
 		else: banmask = msg[1]
 		client.sendRaw('MODE %s +b %s' % (obj.chan, banmask))
 	else:
-		client.send(obj.chan, 'Usage: ', cmdKick.usage)
+		client.send(obj.chan, 'Usage: '+ cmdKick.usage)
 
 @Cmd('!shout', 'Shout to one or more channels', '!shout <[*]channel/all> <message>', ['!!'])
 @RequireAdmin
@@ -166,7 +166,7 @@ def cmdShout(obj):
 		else:
 			client.send(obj.chan, 'Not in channel %s. To join/send/part append * to the channel (!shout *#blah msg)' % msg[1])
 	else:
-		client.send(obj.chan, 'Usage: ', cmdShout.usage)
+		client.send(obj.chan, 'Usage: '+ cmdShout.usage)
 
 @Cmd('!time', 'Check the time/date', '!time', ['!date'])
 def cmdTime(obj):
@@ -179,5 +179,5 @@ def cmdWeather(obj):
 		for m in weather.getMsg(msg[1]):
 			client.send(obj.chan, m)
 	else:
-		client.send(obj.chan, 'Usage: ', cmdWeather.usage)
+		client.send(obj.chan, 'Usage: '+ cmdWeather.usage)
 def init(): pass
