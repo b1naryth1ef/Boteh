@@ -12,11 +12,17 @@ adys = ['B1|Irssi', 'B1|Phone', 'B1naryTh1ef']
 
 alive = True
 
-def removeCommand(command):
+def rmvCmd(command):
 	if command in commands.keys():
 		del commands[command]
 	if command in aliass.keys():
 		del aliass[command]
+
+def removeCommand(command):
+	if type(command) in (list, tuple):
+		for i in command:
+			rmvCmd(i)
+	else: rmvCmd(command)
 
 class Command():
 	def __init__(self, cmd, exe, desc, usage, alias):
@@ -28,13 +34,15 @@ class Command():
 
 		for i in self.alias:
 			aliass[i] = cmd
-			
+
 def Cmd(cmd, desc, usage, alias=[]):
 	def deco(func):
 		commands[cmd] = Command(cmd, func, desc, usage, alias)
 		func.usage = usage
 		func.description = desc
 		func.command = cmd
+		func.rmv = [i for i in alias]
+		func.rmv.append(cmd)
 		return func
 	return deco
 
@@ -66,7 +74,7 @@ def cmdParser(obj):
 @Listener('join')
 def cmdParser(obj):
 	if obj.nick == client.nick:
-		time.sleep(5) #Wait to get NICKS message
+		time.sleep(2) #Wait to get NICKS message
 		for admin in adys:
 		 	print admin, client.makeAdmin(admin)
 		for chan in client.channels.values():
