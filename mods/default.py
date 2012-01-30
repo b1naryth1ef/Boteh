@@ -98,10 +98,10 @@ def rmvAdmin(msg):
 def joinChan(msg):
 	msz = msg.msg.split(' ')
 	if len(msz) == 2:
-		if client.canJoin(msz[1]):
+		if not client.isClientInChannel(msz[1]):
 			client.joinChannel(msz[1])
 			client.send(msg.chan, 'Joined channel %s' % msz[1])
-		else: client.send(msg.chan, 'Can\'t join channel %s. (Blocked or already in it...)' % msz[1])
+		else: client.send(msg.chan, 'Can\'t is already in %s.' % msz[1])
 	else: client.send(msg.chan, 'Usage: ', joinChan.usage)
 
 @Cmd('!part', 'Part (leave) a channel', '!part <channel> [msg]')
@@ -131,9 +131,25 @@ def cmdKick(obj):
 	else:
 		client.send(msg.chan, 'Usage: ', cmdKick.usage)
 
-@Cmd('!kick', 'Kick a user from the channel', '!kick <user> [reason] (must be sent from channel)', ['!k'])
+@Cmd('!shout', 'Shout to one or more channels', '!shout <[*]channel/all> <message>', ['!!'])
 @RequireAdmin
-@RequireBotOp
-def cmdShout(obj): pass
+def cmdShout(obj):
+	msg = obj.msg.split(' ', 2)
+	if len(msg) == 3:
+		msgz = msg[2]
+		if msg[1] == 'all':
+			for i in client.channels.keys():
+				client.send(i, msgz)
+		elif msg[1].startswith('*'):
+			client.joinChannel(msg[1][1:])
+			client.send(msg[1][1:], msgz)
+			client.partChannel(msg[1][1:])
+		elif client.isClientInChannel(msg[1]):
+			client.send(msg[1], msgz)
+		else:
+			client.send(obj.chan, 'Not in channel %s. To join/send/part append * to the channel (!shout *#blah msg)' % msg[1])
+	else:
+		client.send(obj.chan, 'Usage: ', cmdShout.usage)
+
 
 def init(): pass
