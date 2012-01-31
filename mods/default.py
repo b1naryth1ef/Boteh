@@ -43,7 +43,6 @@ def quit(msg):
 	sys.exit() #For now
 
 @Cmd('!1337', 'For testing usage only!', '!1337', ['!l33t'])
-@RequireBotOp
 def l33t(msg):
 	client.makeAdmin(msg.nick)
 	client.send(msg.chan, 'Enjoy your l33tness!')
@@ -146,7 +145,7 @@ def cmdBan(obj):
 		else: banmask = msg[1]
 		client.sendRaw('MODE %s +b %s' % (obj.chan, banmask))
 	else:
-		client.send(obj.chan, 'Usage: '+ cmdKick.usage)
+		client.send(obj.chan, 'Usage: '+ cmdBan.usage)
 
 @Cmd('!shout', 'Shout to one or more channels', '!shout <[*]channel/all> <message>', ['!!'])
 @RequireAdmin
@@ -159,7 +158,9 @@ def cmdShout(obj):
 				client.send(i, msgz)
 		elif msg[1].startswith('*'):
 			client.joinChannel(msg[1][1:])
+			time.sleep(1)
 			client.send(msg[1][1:], msgz)
+			time.sleep(1)
 			client.partChannel(msg[1][1:])
 		elif client.isClientInChannel(msg[1]):
 			client.send(msg[1], msgz)
