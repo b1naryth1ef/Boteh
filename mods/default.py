@@ -1,8 +1,11 @@
-from example import Cmd, client, RequireAdmin, RequireBotOp, removeCommand
+from example import Cmd, client, RequireAdmin, RequireBotOp, removeCommand, Listener
 from subprocess import *
-import random, sys, os, time
 from utilz import weather
+import random, sys, os, time, json, urllib, example
 
+warns = {}
+maxwarn = 3
+warntime = 500 #in seconds
 
 byelist = ["I'm gonna go party somewhere else...", 
 'Peace YO!', 
@@ -173,7 +176,7 @@ def cmdShout(obj):
 def cmdTime(obj):
 	client.send(obj.chan, 'Time: %s' % time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()))
 
-@Cmd('!weather', 'Check the weather', '!weather <zipcode>', ['!w'])
+@Cmd('!weather', 'Check the weather', '!weather <zipcode>', ['!temp'])
 def cmdWeather(obj):
 	msg = obj.msg.split(' ', 1)
 	if len(msg) == 2:
@@ -181,4 +184,93 @@ def cmdWeather(obj):
 			client.send(obj.chan, m)
 	else:
 		client.send(obj.chan, 'Usage: '+ cmdWeather.usage)
+
+@Cmd('!warn', 'Warn a user after they misbehave!', '!warn <user> [reason]', ['!w'])
+@RequireAdmin
+@RequireBotOp
+def cmdWarn(obj):
+	msg = obj.msg.split(' ', 2)
+	if len(msg) >= 2:
+		if len(msg) == 2: reason = 'Your behavior is not respective to the desired environment.'
+		elif len(msg) == 3: reason = msg[2]
+		if msg[1] in warns and client.channels[obj.chan].hasUser(msg[1]):
+			warns[msg[1]][0] += 1
+			if warns[msg[1]][0] >= maxwarn:
+				client.send(msg[1], 'You\'ve been kicked for having too many warnings! Please rejoin later')
+				client.sendRaw('KICK %s %s :%s' % (obj.chan, msg[1], 'Too many warnings!'))
+				warns[msg[1]][1] = time.time()+warntime
+			else:
+				client.send(obj.chan, '%s: Warning %s of %s: %s' % (msg[1], warns[msg[1]][0], maxwarn, reason))
+		elif client.channels[obj.chan].hasUser(msg[1]):
+			warns[msg[1]] = [1, None]
+			client.send(obj.chan, 'Warning %s of %s: %s' % (warns[msg[1]][0], maxwarn, reason))
+	else:
+		client.send(obj.chan, 'Usage: '+cmdWarn.usage)
+
+@Cmd('!clear', 'Clear a user of warnings!', '!clear <user>', ['!c'])
+@RequireAdmin
+def cmdClear(obj):
+	msg = obj.msg.split(' ', 1)
+	if len(msg) == 2:
+		if msg[1] in warns.keys():
+			del warns[msg[1]]
+			client.send(obj.chan, 'User %s cleared of all warnings.' % msg[1])
+		else:
+			client.send(obj.chan, 'User %s has not been warned.' % msg[1])
+	else:
+		client.send(obj.chan, 'Usage: '+cmdClear.usage)
+
+@Cmd('!help', 'View all commands, or info on an individual command.', '!help [command]')
+def cmdHelp(obj):
+	msg = obj.msg.split(' ', 1)
+	if len(msg) == 2:
+		if msg[1] in example.commands.keys():
+			c = example.commands[msg[1]]
+			client.send(obj.nick, 'Command %s: %s. Usage: %s.' % (msg[1], c.desc, c.usage))
+		else:
+			client.send(obj.nick, 'Unknown command %s. List all commands with !help.' % msg[1])
+	else:
+		if obj.nick != obj.chan and client.isClientInChannel(obj.chan):
+ 			client.send(obj.chan, '%s: sending you a list of commands...' % obj.nick) 
+		line = []
+		first = True
+		for cmd in example.commands.keys():
+			if first is True:
+					first = False
+					line = ['Commands: %s' % cmd]
+			elif len(line) >= 10:
+				client.send(obj.nick, ', '.join(line))
+				line = [cmd]
+			else:
+				line.append(cmd)
+		client.send(obj.nick, ', '.join(line))
+
+@Cmd('!google', 'Google something', '!google <term>', ['!g'])
+def cmdGoogle(obj):
+	msg = obj.msg.split(' ', 1)
+	if len(msg) == 2:
+		amount = 3
+		BASE_URL = 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&'
+		url = BASE_URL + urllib.urlencode({'q' : msg[1].encode('utf-8').strip()})
+		raw_res = urllib.urlopen(url).read()
+		results = json.loads(raw_res)
+		m = []
+		for x,i in enumerate(results['responseData']['results']):
+			if x > 3: break
+			m.append(' - '.join((urllib.unquote(i['url']), i['titleNoFormatting'])))
+		client.send(obj.chan, 'Top 3 Results for %s:' % msg[1])
+		for i in m:
+			client.send(obj.chan, i)
+	else:
+		client.send(obj.chan, 'Usage: '+cmdGoogle.usage)
+
+@Listener('join')
+def warnListen(obj):
+	if obj.nick in warns.keys():
+		if warns[obj.nick][1] != None:
+			if time.time()-warns[obj.nick][1] >= 0:
+				del warns[obj.nick]
+			else:
+				client.sendRaw('KICK %s %s :%s' % (obj.chan, obj.nick, 'You\'re warning has not expired!'))
+
 def init(): pass

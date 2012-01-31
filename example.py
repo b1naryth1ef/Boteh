@@ -2,15 +2,15 @@ from irclib import Connection, Client, Listener
 import thread, time, sys
 
 version = 0.2
-mods = ['default', 'dj', 'github']
+mods = ['default', 'dj', 'github', 'logger']
 modfiles = []
+Listener = Listener
 
 threads = []
 aliass = {}
 commands = {}
 adys = ['B1|Irssi', 'B1|Phone', 'B1naryTh1ef']
 
-alive = True
 
 def rmvCmd(command):
 	if command in commands.keys():
@@ -77,17 +77,18 @@ def cmdParser(obj):
 		time.sleep(2) #Wait to get NICKS message
 		for admin in adys:
 		 	print admin, client.makeAdmin(admin)
-		for chan in client.channels.values():
-		 	if admin in chan.users.keys() and client.isClientAdmin(admin):
-		 		client.opUser(admin)
+		if client.isClientOp(obj.chan):
+			for chan in client.channels.values():
+			 	if admin in chan.users.keys() and client.isClientAdmin(admin):
+			 		client.opUser(admin)
 	elif client.users[obj.nick].admin is True:
 		client.opUser(obj.nick, obj.chan)
-	if obj.nick in adys:
+	elif obj.nick in adys:
 		client.makeAdmin(adys)
-		client.opUser(obj.nick)
+		if client.isClientOp():
+			client.opUser(obj.nick)
 
 def loop():
-	global alive
 	while True:
 		if client.alive is False: break
 		client.parse(conn.recv())
