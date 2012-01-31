@@ -5,7 +5,7 @@ import random, sys, os, time, json, urllib, example
 
 warns = {}
 maxwarn = 3
-warntime = 500 #in seconds
+warntime = 5*60 #in seconds
 
 byelist = ["I'm gonna go party somewhere else...", 
 'Peace YO!', 
@@ -196,14 +196,14 @@ def cmdWarn(obj):
 		if msg[1] in warns and client.channels[obj.chan].hasUser(msg[1]):
 			warns[msg[1]][0] += 1
 			if warns[msg[1]][0] >= maxwarn:
-				client.send(msg[1], 'You\'ve been kicked for having too many warnings! Please rejoin later')
+				client.send(msg[1], 'You\'ve been kicked for having too many warnings! Please rejoin after %s seconds!' % (warntime))
 				client.sendRaw('KICK %s %s :%s' % (obj.chan, msg[1], 'Too many warnings!'))
 				warns[msg[1]][1] = time.time()+warntime
 			else:
 				client.send(obj.chan, '%s: Warning %s of %s: %s' % (msg[1], warns[msg[1]][0], maxwarn, reason))
 		elif client.channels[obj.chan].hasUser(msg[1]):
 			warns[msg[1]] = [1, None]
-			client.send(obj.chan, 'Warning %s of %s: %s' % (warns[msg[1]][0], maxwarn, reason))
+			client.send(obj.chan, '%s: Warning %s of %s: %s' % (msg[1], warns[msg[1]][0], maxwarn, reason))
 	else:
 		client.send(obj.chan, 'Usage: '+cmdWarn.usage)
 
@@ -271,6 +271,6 @@ def warnListen(obj):
 			if time.time()-warns[obj.nick][1] >= 0:
 				del warns[obj.nick]
 			else:
-				client.sendRaw('KICK %s %s :%s' % (obj.chan, obj.nick, 'You\'re warning has not expired!'))
+				client.sendRaw('KICK %s %s :%s' % (obj.chan, obj.nick, 'You\'re warning has not expired! You have %s more seconds to go!' % abs(time.time()-warns[obj.nick][1])))
 
 def init(): pass
