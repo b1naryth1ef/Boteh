@@ -9,8 +9,19 @@ Listener = Listener
 threads = []
 aliass = {}
 commands = {}
+matchers = {}
 adys = ['B1|Irssi', 'B1|Phone', 'B1naryTh1ef']
 
+@Listener('chansay')
+@Listener('privsay')
+def matcher(obj):
+	if matchers != {}:
+		matching(obj)
+
+def matching(line):
+	for i in matchers.keys():
+		if i in line.msg.lower():
+			threads.append(thread.start_new_thread(matchers[i], (line,)))
 
 def rmvCmd(command):
 	if command in commands.keys():
@@ -46,6 +57,13 @@ def Cmd(cmd, desc, usage, alias=[]):
 		return func
 	return deco
 
+def Match(textlist):
+	def deco(func):
+		for text in textlist:
+			matchers[text] = func
+		return func
+	return deco
+
 def RequireAdmin(func):
 	def deco(msg):
 		if client.isClientAdmin(msg.nick):
@@ -61,7 +79,7 @@ def RequireBotOp(func):
 		else:
 			return client.sendClientMustBeOp(msg.chan)
 	return deco
-	
+
 @Listener('command')
 def cmdParser(obj):
 	i = obj.msg.split(' ')[0]

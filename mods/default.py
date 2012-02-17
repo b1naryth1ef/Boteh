@@ -1,4 +1,4 @@
-from example import Cmd, client, RequireAdmin, RequireBotOp, removeCommand, Listener
+from example import Cmd, client, RequireAdmin, RequireBotOp, removeCommand, Listener, Match
 from subprocess import *
 from utilz import weather
 import random, sys, os, time, json, urllib, example
@@ -6,6 +6,27 @@ import random, sys, os, time, json, urllib, example
 warns = {}
 maxwarn = 3
 warntime = 5*60 #in seconds
+
+match_hilist = ['hello',
+'hi',
+'sup',
+'heya',
+'hey',
+'heyo',
+'hay']
+
+lovelist = ['I cannot compute love...',
+'from love import hug; hug()',
+'ily2',
+'you really love me?',
+'<3']
+
+hilist = ['Well hello to you too!',
+'Hows it going?',
+'Wazup good sir!',
+'HEYO!',
+'Waz cookin?',
+'YOU SAID HI!!!! <3']
 
 byelist = ["I'm gonna go party somewhere else...", 
 'Peace YO!', 
@@ -21,6 +42,27 @@ byelist = ["I'm gonna go party somewhere else...",
 'LOLLY! DONT POINT THAT GUN TH-',
 'Time to go trololololing in bot heaven',
 'Can\' touch this!']
+
+@Match(['<3', 'ily'])
+def matchLove(obj):
+	if obj.msg.startswith(client.nick):
+		client.send(obj.chan, '%s: %s' % (obj.nick, random.choice(lovelist)))
+
+@Match(match_hilist)
+def matchHello(obj):
+	if obj.msg.startswith(client.nick):
+		client.send(obj.chan, '%s: %s' % (obj.nick, random.choice(hilist)))
+
+@Match(['neek:'])
+def matchNeek(obj):
+	client.send(obj.chan, '%s: Bahahahah. Neek is a whitehat joker!' % obj.nick)
+
+@Cmd('!uptime', 'List uptime of the box', '!uptime', ['!up'])
+def cmdUptime(obj):
+	msg = obj.msg.split(' ')
+	p = Popen(["uptime"], stdout=PIPE, close_fds=True)
+	up = p.stdout.readline().strip().split(' ', 1)
+	client.send(obj.chan, 'Uptime:'+str(up[1:]))
 
 @Cmd('!version', 'Print-out the latest version of the bot (from the git header).', '!version', ['!ver'])
 def version(msg):
