@@ -62,7 +62,7 @@ def cmdUptime(obj):
 	msg = obj.msg.split(' ')
 	p = Popen(["uptime"], stdout=PIPE, close_fds=True)
 	up = p.stdout.readline().strip().split(' ', 1)
-	client.send(obj.chan, 'Uptime:'+str(up[1:]))
+	client.send(obj.chan, 'Uptime:'+str(up[1:][0]))
 
 @Cmd('!version', 'Print-out the latest version of the bot (from the git header).', '!version', ['!ver'])
 def version(msg):
