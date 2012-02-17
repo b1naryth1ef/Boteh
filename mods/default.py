@@ -138,6 +138,12 @@ def cmdKick(obj):
 	else:
 		client.send(msg.chan, 'Usage: '+ cmdKick.usage)
 
+# @Cmd('!tempban', 'Temporarily ban a user from the channel', '!tempban <user>', ['!tb'])
+# @RequireAdmin
+# @RequireBotOp
+# def cmdTempBan(obj):
+# 	print 'Winning!'
+
 @Cmd('!ban', 'Ban a user from the channel', '!ban <user/*banmask>', ['!b'])
 @RequireAdmin
 @RequireBotOp
@@ -149,6 +155,16 @@ def cmdBan(obj):
 		client.sendRaw('MODE %s +b %s' % (obj.chan, banmask))
 	else:
 		client.send(obj.chan, 'Usage: '+ cmdBan.usage)
+
+@Cmd('!topic', 'Set the topic of a channel', '!topic <topic>')
+@RequireBotOp
+@RequireAdmin
+def cmdTopic(obj):
+	msg = obj.msg.split(' ', 1)
+	if len(msg) == 2:
+		client.sendRaw('TOPIC %s :%s' % (obj.chan, msg[1]))
+	else:
+		client.send(obj.chan, 'Usage: '+ cmdTopic.usage)
 
 @Cmd('!shout', 'Shout to one or more channels', '!shout <[*]channel/all> <message>', ['!!'])
 @RequireAdmin
