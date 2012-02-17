@@ -10,6 +10,7 @@ togglez = {
 
 chans = {}
 enabled = False
+web = True
 
 @Cmd('!log', 'Check the log status, enable/disable.', '!log [on/off]')
 @RequireAdmin
@@ -35,21 +36,22 @@ def cmdLogChan(obj):
 		if msg[1] not in chans and client.isClientInChannel(msg[1]):
 			handle = logging.FileHandler('./logs/%s.log' % msg[1])
 			handle.setFormatter('%(asctime)s %(message)s')
-			chans[msg[1]] = logging.getLogger(msg[1])
-			chans[msg[1]].addHandler(handle)
+			chans[msg[1]] = [logging.getLogger(msg[1]), open('./logs/%s.log' % msg[1])]
+			chans[msg[1]][0].addHandler(handle)
 
 @Listener('chansay')
 def listenz(obj):
 	if enabled is True:
 		if obj.chan in chans.keys():
-			chans[obj.chan].info('%s: %s' % (obj.nick, obj.msg))
+			chans[obj.chan][0].info('%s: %s' % (obj.nick, obj.msg))
 
 def init():
+	global app
 	if 'logs' not in os.listdir(os.getcwd()):
 		os.mkdir('logs')
 	logging.basicConfig(level='INFO', filemode='w', format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 	for i in client.channels.keys():
 		handle = logging.FileHandler('./logs/%s.log' % i) #logging.handlers.RotatingFileHandler('%s.log' % i, mode='a')
 		handle.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
-		chans[i] = logging.getLogger(i)
-		chans[i].addHandler(handle)
+		chans[i] = [logging.getLogger(i), open('./logs/%s.log' % i)]
+		chans[i][0].addHandler(handle)
