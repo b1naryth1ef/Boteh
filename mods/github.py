@@ -53,7 +53,7 @@ def cmdGitSpam(obj):
 			if chan in CHANS: CHANS.remove(chan)
 			client.send(obj.chan, 'No longer spamming git messages to %s' % chan)
 	else:
-		client.send(obj.chan, 'Usage: ', cmdGitSpam.usage)
+		client.send(obj.chan, 'Usage: '+ cmdGitSpam.usage)
 
 @Cmd('!repos', 'List a github users repos', '!repos <github user>')
 def cmdUserListRepo(obj):
@@ -68,7 +68,7 @@ def cmdUserListRepo(obj):
 		else:
 			client.send(obj.chan, 'No repositories for user %s' % msg[1])
 	else:
-		 client.send(obj.chan, 'Usage: ', cmdUserListRepo.usage)
+		 client.send(obj.chan, 'Usage: '+ cmdUserListRepo.usage)
 
 @Cmd('!repo', 'Get info about a specific repository', '!repo <user/repo> ')
 def cmdRepoInfo(obj):
@@ -82,7 +82,7 @@ def cmdRepoInfo(obj):
 			return client.send(obj.chan, 'Unknown user/repo (Misspelled?)')
 		client.send(obj.chan, '%s%s: %s (%s)' % (repo.name, isFork(repo.fork), repo.description, repo.url))
 	else:
-		 client.send(obj.chan, 'Usage: ', cmdRepoInfo.usage)
+		 client.send(obj.chan, 'Usage: '+ cmdRepoInfo.usage)
 
 def gity(lin):
 	return 'http://github.com/'+str(lin)
