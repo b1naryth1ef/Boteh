@@ -3,9 +3,20 @@ from subprocess import *
 from utilz import weather
 import random, sys, os, time, json, urllib, example
 
+topic = {
+	'prefix':'',
+	'suffix':'',
+	'topic':'',
+	'locked':False}
 warns = {}
+listens = {}
 maxwarn = 3
 warntime = 5*60 #in seconds
+
+trans = {
+	True:'On',
+	False:'Off'
+}
 
 match_hilist = ['hello',
 'hi',
@@ -52,10 +63,6 @@ def matchLove(obj):
 def matchHello(obj):
 	if obj.msg.startswith(client.nick):
 		client.send(obj.chan, '%s: %s' % (obj.nick, random.choice(hilist)))
-
-@Match(['neek:'])
-def matchNeek(obj):
-	client.send(obj.chan, '%s: Bahahahah. Neek is a whitehat joker!' % obj.nick)
 
 @Cmd('!uptime', 'List uptime of the box', '!uptime', ['!up'])
 def cmdUptime(obj):
@@ -321,6 +328,44 @@ def cmdGoogle(obj):
 			client.send(obj.chan, i)
 	else:
 		client.send(obj.chan, 'Usage: '+cmdGoogle.usage)
+
+@Cmd('!tt', 'Dynamicall control the topic', '"!tt help" for info', ['!topictools'])
+@RequireAdmin
+def cmdTopicTools(obj):
+	global topic
+	#!tt topic lalalala
+	#!tt +suffix prefix append
+	#!tt -suffix suffix append
+	#!tt lock
+	msg = obj.msg.split(' ', 2)
+	if len(msg) == 3:
+		if msg[1].startswith('-') or msg[1].startswith('+'): 
+			df = msg[1][:1]
+			cd = msg[1][1:]
+		else: 
+			df = ''
+			cd = msg[1]
+		if cd == 'prefix':
+			if df == '': topic['prefix'] = msg[2]
+			elif df == '-': topic['prefix'] = topic['prefix']+msg[2]
+			elif df == '+': topic['prefix'] = msg[2]+topic['prefix']
+		elif cd == 'suffix':
+			if df == '': topic['suffix'] = msg[2]
+			elif df == '-': topic['suffix'] = topic['suffix']+msg[2]
+			elif df == '+': topic['suffix'] = msg[2]+topic['suffix']
+		elif cd == 'topic':
+			if df == '': topic['topic'] = msg[2]
+			elif df == '-': topic['topic'] = topic['topic']+msg[2]
+			elif df == '+': topic['topic'] = msg[2]+topic['topic']
+		else: return None #Unkown command
+		top = '%s%s%s' % (topic['prefix'], topic['topic'], topic['suffix'])
+		client.sendRaw('TOPIC %s :%s' % (obj.chan, top))
+	elif len(msg) == 2:
+		if msg[1] == 'help':
+			client.send(obj.chan, 'Help, Lock (Toggle lock). Topic, Suffix, Prefix with modifiers +[Append] -[Suffixify]. Example: !tt +suffix Add To Front Of Suffix')
+		elif msg[1] == 'lock':
+			topic['locked'] = not topic['locked']
+			client.send('Topic is now %s' % trans[topic['locked']])
 
 @Listener('join')
 def warnListen(obj):

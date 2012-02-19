@@ -34,6 +34,27 @@ def isFork(booly):
 
 REPOS = [Repo('B1n\'s game', 'So-I-Made-This-Game...', 'b1naryth1ef'), Repo('JAPIL', 'JAPIL', 'b1naryth1ef', ['master']), Repo('UrTBot', 'UrTBot', 'b1naryth1ef')]
 
+def makeChannel(string):
+	if string.startswith('#'):
+		return string
+	else:
+		return '#'+string
+
+@Cmd('!gitspam', 'Add/remove a channel from the spammer', '!gitspam <add/remove> <channel>')
+def cmdGitSpam(obj):
+	global CHANS
+	msg = obj.msg.split(' ')
+	if len(msg) == 3:
+		chan = makeChannel(msg[2])
+		if msg[1].lower() == 'add':
+			if chan not in CHANS: CHANS.append(chan)
+			client.send(obj.chan, 'Now spamming git messages to %s' % chan)
+		elif msg[1].lower() == 'remove':
+			if chan in CHANS: CHANS.remove(chan)
+			client.send(obj.chan, 'No longer spamming git messages to %s' % chan)
+	else:
+		client.send(obj.chan, 'Usage: ', cmdGitSpam.usage)
+
 @Cmd('!repos', 'List a github users repos', '!repos <github user>')
 def cmdUserListRepo(obj):
 	msg = obj.msg.split(' ')
