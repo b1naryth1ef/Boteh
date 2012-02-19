@@ -3,11 +3,7 @@ from subprocess import *
 from utilz import weather
 import random, sys, os, time, json, urllib, example
 
-topic = {
-	'prefix':'',
-	'suffix':'',
-	'topic':'',
-	'locked':False}
+chan_topics = {}
 warns = {}
 listens = {}
 maxwarn = 3
@@ -332,12 +328,21 @@ def cmdGoogle(obj):
 @Cmd('!tt', 'Dynamicall control the topic', '"!tt help" for info', ['!topictools'])
 @RequireAdmin
 def cmdTopicTools(obj):
-	global topic
+	global chan_topics
 	#!tt topic lalalala
 	#!tt +suffix prefix append
 	#!tt -suffix suffix append
 	#!tt lock
 	msg = obj.msg.split(' ', 2)
+	if obj.chan not in chan_topics:
+		chan_topics[obj.chan] = {
+						'prefix':'',
+						'suffix':'',
+						'topic':'',
+						'locked':False}
+
+	topic = chan_topics[obj.chan]
+
 	if len(msg) == 3:
 		if msg[1].startswith('-') or msg[1].startswith('+'): 
 			df = msg[1][:1]
@@ -375,5 +380,15 @@ def warnListen(obj):
 				del warns[obj.nick]
 			else:
 				client.sendRaw('KICK %s %s :%s' % (obj.chan, obj.nick, 'You\'re warning has not expired! You have %s more seconds to go!' % abs(time.time()-warns[obj.nick][1])))
+
+@Listener('topic')
+def topicListen(obj):
+	if obj.chan in chan_topics:
+		if chan_topics[obj.chan]['locked'] is True:
+			topic = chan_topics[obj.chan]
+			top = '%s%s%s' % (topic['prefix'], topic['topic'], topic['suffix'])
+			client.sendRaw('TOPIC %s :%s' % (obj.chan, top))
+
+
 
 def init(): pass
