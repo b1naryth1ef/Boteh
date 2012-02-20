@@ -403,4 +403,4 @@ def init():
 	if 'chan_topics' in example.savez.keys():
 		chan_topics = example.savez['chan_topics']
 	else:
-		example.appendSave('chan_topics', chan_topics)
+		example.appendSave('chan_topics', {})
