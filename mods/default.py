@@ -344,6 +344,7 @@ def cmdTopicTools(obj):
 						'prefix':'',
 						'suffix':'',
 						'topic':'',
+						'format':'',
 						'locked':False}
 
 	topic = chan_topics[obj.chan]
@@ -368,8 +369,16 @@ def cmdTopicTools(obj):
 			if df == '': topic['topic'] = msg[2]
 			elif df == '-': topic['topic'] = topic['topic']+msg[2]
 			elif df == '+': topic['topic'] = msg[2]+topic['topic']
+		elif cd == 'format':
+			if msg[2].count('%s') == 3:
+				topic['foramt'] = msg[2]
+			else:
+				client.send(obj.chan, 'Format must have 3 %s\'s in ')
 		else: return None #Unkown command
-		top = '%s%s%s%s%s' % (topic['prefix'], sep(topic['topic']), topic['topic'], sep(topic['suffix']),topic['suffix'])
+		if topic['format'] == '':
+			top = '%s%s%s%s%s' % (topic['prefix'], sep(topic['topic']), topic['topic'], sep(topic['suffix']),topic['suffix'])
+		else:
+			top = topic['format'] % (topic['prefix'], topic['topic'], topic['suffix'])
 		client.sendRaw('TOPIC %s :%s' % (obj.chan, top))
 	elif len(msg) == 2:
 		if msg[1] == 'help':
