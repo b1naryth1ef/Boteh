@@ -145,8 +145,6 @@ def init():
 	client.joinChannel('#bitchnipples')
 	client.botMode = True
 
-	loadSave()
-
 	for i in mods:
 		__import__('mods.'+i)
 		try:
