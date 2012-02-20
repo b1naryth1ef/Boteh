@@ -370,7 +370,7 @@ def cmdTopicTools(obj):
 			client.send(obj.chan, 'Help, Lock (Toggle lock). Topic, Suffix, Prefix with modifiers +[Append] -[Suffixify]. Example: !tt +suffix Add To Front Of Suffix')
 		elif msg[1] == 'lock':
 			topic['locked'] = not topic['locked']
-			client.send('Topic is now %s' % trans[topic['locked']])
+			client.send(obj.chan, 'Topic is now %s' % trans[topic['locked']])
 
 @Listener('join')
 def warnListen(obj):
