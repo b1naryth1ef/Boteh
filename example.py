@@ -1,6 +1,6 @@
 from irclib import Connection, Client, Listener
 import cPickle as pickle
-import thread, time, sys
+import thread, time, sys, os
 
 version = 0.2
 mods = ['default', 'dj', 'github', 'logger']
