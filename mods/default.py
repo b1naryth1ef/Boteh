@@ -350,6 +350,7 @@ def cmdTopicTools(obj):
 		else: 
 			df = ''
 			cd = msg[1]
+		if msg[2] == '*': msg[2] = ''
 		if cd == 'prefix':
 			if df == '': topic['prefix'] = msg[2]
 			elif df == '-': topic['prefix'] = topic['prefix']+msg[2]
@@ -363,7 +364,7 @@ def cmdTopicTools(obj):
 			elif df == '-': topic['topic'] = topic['topic']+msg[2]
 			elif df == '+': topic['topic'] = msg[2]+topic['topic']
 		else: return None #Unkown command
-		top = '%s%s%s' % (topic['prefix'], topic['topic'], topic['suffix'])
+		top = '%s | %s | %s' % (topic['prefix'], topic['topic'], topic['suffix'])
 		client.sendRaw('TOPIC %s :%s' % (obj.chan, top))
 	elif len(msg) == 2:
 		if msg[1] == 'help':
