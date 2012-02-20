@@ -19,12 +19,11 @@ def loadSave():
 	global FILE, savez
 	if os.path.exists('save_file.dat'):
 		FILE = open('save_file.dat', 'rw')
+		savez = pickle.load(FILE)
 	else:
 		open('save_file.dat', 'w').close()
 		return loadSave()
 	
-	savez = pickle.load(FILE)
-
 def appendSave(tag, obj):
 	savez[tag] = obj
 
