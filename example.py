@@ -6,6 +6,7 @@ version = 0.2
 mods = ['default', 'dj', 'github', 'logger']
 modfiles = []
 Listener = Listener
+FILE = None
 
 threads = []
 aliass = {}
@@ -137,6 +138,8 @@ def init():
 	client = Client(conn)
 	client.joinChannel('#bitchnipples')
 	client.botMode = True
+
+	loadSave()
 
 	for i in mods:
 		__import__('mods.'+i)
