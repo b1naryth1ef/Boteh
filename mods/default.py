@@ -335,7 +335,7 @@ def cmdTopicTools(obj):
 	#!tt -suffix suffix append
 	#!tt lock
 	def sep(inp):
-		if inp == '' or ' ': return ''
+		if inp == '' or inp == ' ': return ''
 		else: return ' | '
 
 	msg = obj.msg.split(' ', 2)
