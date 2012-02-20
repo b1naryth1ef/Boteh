@@ -373,12 +373,13 @@ def cmdTopicTools(obj):
 			if msg[2].count('%s') == 3:
 				topic['foramt'] = msg[2]
 			else:
-				client.send(obj.chan, 'Format must have 3 %s\'s in ')
+				client.send(obj.chan, 'Format must have 3 %s\'s in it')
 		else: return None #Unkown command
 		if topic['format'] == '':
 			top = '%s%s%s%s%s' % (topic['prefix'], sep(topic['topic']), topic['topic'], sep(topic['suffix']),topic['suffix'])
 		else:
 			top = topic['format'] % (topic['prefix'], topic['topic'], topic['suffix'])
+		print top
 		client.sendRaw('TOPIC %s :%s' % (obj.chan, top))
 	elif len(msg) == 2:
 		if msg[1] == 'help':
