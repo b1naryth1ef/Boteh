@@ -1,4 +1,5 @@
 from irclib import Connection, Client, Listener
+import cPickle as pickle
 import thread, time, sys
 
 version = 0.2
@@ -10,7 +11,25 @@ threads = []
 aliass = {}
 commands = {}
 matchers = {}
+savez = {}
 adys = ['B1|Irssi', 'B1|Phone', 'B1naryTh1ef']
+
+def loadSave():
+	global FILE, savez
+	if os.path.exists('save_file.dat'):
+		FILE = open('save_file.dat', 'rw')
+	else:
+		open('save_file.dat', 'w').close()
+		return loadSave()
+	
+	savez = pickle.load(FILE)
+
+def appendSave(tag, obj):
+	savez[tag] = obj
+
+def dumpSave():
+	global savez, FILE
+	pickle.dump(savez, FILE)
 
 @Listener('chansay')
 @Listener('privsay')

@@ -84,6 +84,7 @@ def quit(msg):
 	#!quit blah blah blah
 	msgz = msg.msg.split(' ', 1)
 	cli = msg.nick
+	quit()
 	if len(msgz) == 1:
 		client.quit(random.choice(byelist))
 	elif len(msgz) == 2:
@@ -333,6 +334,10 @@ def cmdTopicTools(obj):
 	#!tt +suffix prefix append
 	#!tt -suffix suffix append
 	#!tt lock
+	def sep(inp):
+		if inp == '' or ' ': return ''
+		else: return ' | '
+
 	msg = obj.msg.split(' ', 2)
 	if obj.chan not in chan_topics:
 		chan_topics[obj.chan] = {
@@ -364,7 +369,7 @@ def cmdTopicTools(obj):
 			elif df == '-': topic['topic'] = topic['topic']+msg[2]
 			elif df == '+': topic['topic'] = msg[2]+topic['topic']
 		else: return None #Unkown command
-		top = '%s | %s | %s' % (topic['prefix'], topic['topic'], topic['suffix'])
+		top = '%s%s%s%s%s' % (topic['prefix'], sep(topic['topic']), topic['topic'], sep(topic['suffix']),topic['suffix'])
 		client.sendRaw('TOPIC %s :%s' % (obj.chan, top))
 	elif len(msg) == 2:
 		if msg[1] == 'help':
@@ -390,6 +395,12 @@ def topicListen(obj):
 			top = '%s%s%s' % (topic['prefix'], topic['topic'], topic['suffix'])
 			client.sendRaw('TOPIC %s :%s' % (obj.chan, top))
 
+def quit():
+	example.appendSave('chan_topics', chan_topics)
+	example.dumpSave()
 
-
-def init(): pass
+def init():
+	if 'chan_topics' in example.savez.keys():
+		chan_topics = example.savez['chan_topics']
+	else:
+		example.appendSave('chan_topics', chan_topics)
