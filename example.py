@@ -1,5 +1,5 @@
 from irclib import Connection, Client, Listener
-import cPickle as pickle
+import cPickle
 import thread, time, sys, os
 
 version = 0.2
@@ -7,7 +7,7 @@ mods = ['default', 'dj', 'github', 'logger']
 modfiles = []
 Listener = Listener
 FILE = None
-
+useStorage = True #You need Goatfish for this (just easy_install or pip it)
 threads = []
 aliass = {}
 commands = {}
@@ -15,21 +15,28 @@ matchers = {}
 savez = {}
 adys = ['B1|Irssi', 'B1|Phone', 'B1naryTh1ef']
 
-def loadSave():
-	global FILE, savez
-	if os.path.exists('save_file.dat'):
-		FILE = open('save_file.dat', 'rw')
-		savez = pickle.load(FILE)
-	else:
-		open('save_file.dat', 'w').close()
-		FILE = open('save_file.dat', 'rw')
-	
-def appendSave(tag, obj):
-	savez[tag] = obj
+if useStorage:
+	from storage import Field
 
-def dumpSave():
-	global savez, FILE
-	pickle.dump(savez, FILE)
+def hasObj(name):
+	if len([i for i in Field.find({'name':name})]) == 1:
+		return True
+	else:
+		return False
+
+def saveObj(name, value):
+	q = [i for i in Field.find({'name':name})]
+	if len(q) == 1:
+		q[0].value = cPickle.dumps(value, cPickle.HIGHEST_PROTOCOL)
+		q[0].save()
+	elif len(q) == 0:
+		f = Field()
+		f.name = name
+		f.value = cPickle.dumps(value, cPickle.HIGHEST_PROTOCOL)
+		f.save()
+
+def loadObj(name):
+	return [i for i in Field.find({'name':name})][0].value
 
 @Listener('chansay')
 @Listener('privsay')

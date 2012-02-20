@@ -84,7 +84,7 @@ def quit(msg):
 	#!quit blah blah blah
 	msgz = msg.msg.split(' ', 1)
 	cli = msg.nick
-	quit()
+	save()
 	if len(msgz) == 1:
 		client.quit(random.choice(byelist))
 	elif len(msgz) == 2:
@@ -369,17 +369,13 @@ def cmdTopicTools(obj):
 			if df == '': topic['topic'] = msg[2]
 			elif df == '-': topic['topic'] = topic['topic']+msg[2]
 			elif df == '+': topic['topic'] = msg[2]+topic['topic']
-		elif cd == 'format':
-			if msg[2].count('%s') == 3:
-				topic['foramt'] = msg[2]
-			else:
-				client.send(obj.chan, 'Format must have 3 %s\'s in it')
+		# elif cd == 'format':
+		# 	if msg[2].count('%s') == 3:
+		# 		topic['foramt'] = msg[2]
+		# 	else:
+		# 		client.send(obj.chan, 'Format must have 3 %s\'s in it')
 		else: return None #Unkown command
-		if topic['format'] == '':
-			top = '%s%s%s%s%s' % (topic['prefix'], sep(topic['topic']), topic['topic'], sep(topic['suffix']),topic['suffix'])
-		else:
-			top = topic['format'] % (topic['prefix'], topic['topic'], topic['suffix'])
-		print top
+		top = '%s%s%s%s%s' % (topic['prefix'], sep(topic['topic']), topic['topic'], sep(topic['suffix']),topic['suffix'])
 		client.sendRaw('TOPIC %s :%s' % (obj.chan, top))
 	elif len(msg) == 2:
 		if msg[1] == 'help':
@@ -405,12 +401,13 @@ def topicListen(obj):
 			top = '%s%s%s' % (topic['prefix'], topic['topic'], topic['suffix'])
 			client.sendRaw('TOPIC %s :%s' % (obj.chan, top))
 
-def quit():
-	example.appendSave('chan_topics', chan_topics)
-	example.dumpSave()
+def save():
+	if example.useStorage:
+		example.saveObj('chan_topics', {})
 
 def init():
-	if 'chan_topics' in example.savez.keys():
-		chan_topics = example.savez['chan_topics']
-	else:
-		example.appendSave('chan_topics', {})
+	if example.useStorage:
+		if example.hasObj('chan_topics'):
+			chan_topics = example.loadObj('chan_topics')
+		else:
+			save()
