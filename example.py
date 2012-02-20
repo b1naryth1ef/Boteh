@@ -22,7 +22,7 @@ def loadSave():
 		savez = pickle.load(FILE)
 	else:
 		open('save_file.dat', 'w').close()
-		return loadSave()
+		FILE = open('save_file.dat', 'rw')
 	
 def appendSave(tag, obj):
 	savez[tag] = obj
