@@ -73,7 +73,6 @@ def version(msg):
 	commit = p.stdout.readline()
 	author = p.stdout.readline()
 	date = p.stdout.readline()
-	#client.send(msg.chan, 'Version: '+str(api.getVersion()))
 	client.send(msg.chan, "Git: "+commit)
 	client.send(msg.chan, author)
 	client.send(msg.chan, date)
@@ -134,7 +133,7 @@ def deopCmd(msg):
 def voiceCmd(msg):
 	msz = msg.msg.split(' ')
 	if len(msz) == 2:
-		client.voiceUser(msz[1], msg.chan)
+		client.sendRaw('MODE %s +v %s' % (msg.chan, msz[1]))
 	else:
 		client.send(msg.chan, 'Usage: '+ voiceCmd.usage)
 
@@ -144,7 +143,7 @@ def voiceCmd(msg):
 def devoiceCmd(msg):
 	msz = msg.msg.split(' ')
 	if len(msz) == 2:
-		client.devoiceUser(msz[1], msg.chan)
+		client.sendRaw('MODE %s -v %s' % (msg.chan, msz[1]))
 	else:
 		client.send(msg.chan, 'Usage: '+ devoiceCmd.usage)
 
