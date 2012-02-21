@@ -121,12 +121,32 @@ def opCmd(msg):
 @Cmd('!deop', 'Deop a user', '!deop <user>')
 @RequireAdmin
 @RequireBotOp
-def opCmd(msg):
+def deopCmd(msg):
 	msz = msg.msg.split(' ')
 	if len(msz) == 2:
 		client.deopUser(msz[1], msg.chan)
 	else:
 		client.send(msg.chan, 'Usage: '+ deopCmd.usage)
+
+@Cmd('!voice', 'Voice a user', '!voice <user>')
+@RequireAdmin
+@RequireBotOp
+def voiceCmd(msg):
+	msz = msg.msg.split(' ')
+	if len(msz) == 2:
+		client.voiceUser(msz[1], msg.chan)
+	else:
+		client.send(msg.chan, 'Usage: '+ voiceCmd.usage)
+
+@Cmd('!devoice', 'Devoice a user', '!devoice <user>')
+@RequireAdmin
+@RequireBotOp
+def devoiceCmd(msg):
+	msz = msg.msg.split(' ')
+	if len(msz) == 2:
+		client.devoiceUser(msz[1], msg.chan)
+	else:
+		client.send(msg.chan, 'Usage: '+ devoiceCmd.usage)
 
 @Cmd('!addadmin', 'Add an admin.', '!addadmin <user>')
 @RequireAdmin
