@@ -132,18 +132,12 @@ def cmdParser(obj):
 		if client.isClientOp():
 			client.opUser(obj.nick)
 
-def loop():
-	while True:
-		if client.alive is False: break
-		client.parse(conn.recv())
-
 def init():
 	global conn, client
-
-	conn = Connection(network='irc.quakenet.org', nick='BroMan').startup()
+	
+	conn = Connection(Host="irc.quakenet.org", Nick="BroMan").connect(True)
 	client = Client(conn)
 	client.joinChannel('#bitchnipples')
-	client.botMode = True
 
 	for i in mods:
 		__import__('mods.'+i)
@@ -152,7 +146,9 @@ def init():
 			threads.append(thread.start_new_thread(i.init, ()))
 		except Exception, e:
 			print 'MODULE ERROR: Please add the function init() to your module.[', e, ']'
-	loop()
+	
+	while client.alive:
+		client.parse(conn.read())
 
 if __name__ == '__main__':
 	print 'Please start using the command "python start.py"'
